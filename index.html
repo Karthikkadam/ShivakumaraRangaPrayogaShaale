@@ -743,7 +743,7 @@
                         <h3 style="color: #8B0000; margin-bottom: 1rem;">Join Our Drama Program</h3>
                         <p style="margin-bottom: 2rem; color: #666;">Fill out the form below to register for upcoming drama sessions and begin your journey in the dramatic arts.</p>
                         
-                        <a href="https://forms.gle/your-form" target="_blank" class="btn" style="font-size: 1.1rem; padding: 15px 40px;">Register Now</a>
+                        <a href="pdf.pdf" download class="btn" style="margin-top: 1rem; background: #28a745;">Download Registration PDF</a>
                         
                         <div class="registration-steps">
                             <h4 style="margin-bottom: 1rem; color: #8B0000;">Registration Steps:</h4>
@@ -773,7 +773,7 @@
                             <div>
                                 <h3 style="color: #8B0000; margin-bottom: 1rem;">Get in Touch</h3>
                                 <p style="margin-bottom: 1rem;"><strong>Address:</strong><br>Sri Shivakumara Ranga Prayoga Shaale<br>Sanehalli, Karnataka</p>
-                                <p style="margin-bottom: 1rem;"><strong>Phone:</strong><br>+91 XXXXX XXXXX</p>
+                                <p style="margin-bottom: 1rem;"><strong>Phone:</strong><br>9448398144 (Madhu E)</p>
                                 <p style="margin-bottom: 1rem;"><strong>Email:</strong><br>info@dramaschool.com</p>
                                 <p><strong>Office Hours:</strong><br>Monday - Saturday: 9:00 AM - 6:00 PM</p>
                             </div>
@@ -897,7 +897,10 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
-            <p id="footerInfo">&copy; 2025 Sri Shivakumara Ranga Prayoga Shaale Sanehalli. All rights reserved.</p>
+            <p id="footerInfo">
+                Contact: 9448398144 (Madhu E)<br>
+                &copy; 2025 Sri Shivakumara Ranga Prayoga Shaale Sanehalli. All rights reserved.
+            </p>
         </div>
     </footer>
 
@@ -1206,11 +1209,11 @@
                 <p><strong>Date & Time:</strong> ${formattedDate}</p>
                 <p><strong>Location:</strong> ${event.location}</p>
                 <p><strong>Description:</strong> ${event.description}</p>
-                <div style="margin-top: 2rem;">
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
                     <a href="https://forms.gle/your-form" target="_blank" class="btn">Register for this Event</a>
+                    <a href="pdf.pdf" download class="btn" style="background: #28a745;">Download Registration PDF</a>
                 </div>
             `;
-            
             document.getElementById('eventDetailsModal').style.display = 'block';
         }
 
