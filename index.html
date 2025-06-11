@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sri Shivakumara Ranga Prayoga Shaale Sanehalli</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #FFD700;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 160px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(139,0,0,0.1), rgba(220,20,60,0.1)), url('images/kk.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-content h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 4rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #8B0000;
+        }
+
+        /* About Teaser */
+        .about-teaser {
+            background: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .about-teaser p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            color: #666;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #8B0000;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #DC143C;
+            transform: translateY(-2px);
+        }
+
+        /* Events Grid */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            opacity: 0;
+        }
+
+        .event-card.visible {
+            opacity: 1;
+        }
+
+        .event-image {
+            height: 200px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .event-info {
+            padding: 1.5rem;
+        }
+
+        .event-info h3 {
+            color: #8B0000;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #8B0000;
+        }
+
+        textarea.form-control {
+            height: 120px;
+            resize: vertical;
+        }
+
+        /* Admin Styles */
+        .admin-login {
+            max-width: 400px;
+            margin: 4rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .admin-dashboard {
+            background: white;
+            margin: 2rem;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .dashboard-nav button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .dashboard-nav button.active {
+            background: #8B0000;
+            color: white;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .close {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #8B0000;
+        }
+
+        /* Footer */
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .social-icons {
+            margin-top: 1rem;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 1rem;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: #FFD700;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #8B0000;
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hero-content h2 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-nav {
+                flex-wrap: wrap;
+            }
+
+            .admin-table {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mt-2 { margin-top: 1rem; }
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .file-upload {
+            border: 2px dashed #ddd;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: #8B0000;
+        }
+
+        .registration-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .registration-steps {
+            text-align: left;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .registration-steps ol {
+            margin-left: 1rem;
+        }
+
+        .registration-steps li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animation Styles */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            opacity: 0;
+        }
+
+        .event-card.visible {
+            opacity: 1;
+        }
+
+        /* Photo Gallery Styles */
+        .photo-gallery {
+            padding: 4rem 0;
+            background: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Add gradient overlays for smooth edges */
+        .photo-gallery::before,
+        .photo-gallery::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .photo-gallery::before {
+            left: 0;
+            background: linear-gradient(to right, white, transparent);
+        }
+
+        .photo-gallery::after {
+            right: 0;
+            background: linear-gradient(to left, white, transparent);
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            margin: 0 -1.5rem; /* Compensate for the gap */
+        }
+
+        .gallery-grid {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            animation: slideLeft 30s linear infinite;
+            width: max-content;
+            position: relative;
+            padding: 0 1.5rem; /* Add padding to compensate for the negative margin */
+        }
+
+        @keyframes slideLeft {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(-100% - 1.5rem));
+            }
+        }
+
+        .gallery-grid:hover {
+            animation-play-state: paused;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+            flex: 0 0 250px;
+        }
+
+        .gallery-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0);
+            transition: background 0.3s ease;
+        }
+
+        .gallery-item:hover::after {
+            background: rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>Sri Shivakumara Ranga Prayoga Shaale Sanehalli</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="#" onclick="showPage('home')">Home</a></li>
+                    <li><a href="#" onclick="showPage('about')">About</a></li>
+                    <li><a href="#" onclick="showPage('events')">Events</a></li>
+                    <li><a href="#" onclick="showPage('registration')">Registration</a></li>
+                    <li><a href="#" onclick="showPage('contact')">Contact</a></li>
+                    <li><a href="#" onclick="showPage('admin')">Admin</a></li>
+                </ul>
+                <div class="hamburger" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Page -->
+        <div id="homePage" class="page">
+            <section class="hero">
+                <div class="hero-content">
+                    <h2 id="heroTitle">Welcome to Our Drama School</h2>
+                    <p id="heroText">Discover the art of storytelling through drama, music, and performance at Karnataka's premier drama school.</p>
+                </div>
+            </section>
+
+            <section class="about-teaser section">
+                <div class="container">
+                    <h2 class="section-title">About Our School</h2>
+                    <p id="aboutTeaser">Sri Shivakumara Ranga Prayoga Shaale Sanehalli is dedicated to preserving and promoting the rich traditions of Kannada theatre while nurturing new talent. Our school provides comprehensive training in various aspects of dramatic arts.</p>
+                    <a href="#" onclick="showPage('about')" class="btn">Learn More About Us</a>
+                </div>
+            </section>
+
+            <!-- Photo Gallery Section -->
+            <section class="photo-gallery section">
+                <div class="container">
+                    <h2 class="section-title">Photo Gallery</h2>
+                    <div class="gallery-container">
+                        <div class="gallery-grid" id="homePhotoGallery">
+                            <!-- Photos will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="container">
+                    <h2 class="section-title">Upcoming Events</h2>
+                    <div class="events-grid" id="homeEventsGrid">
+                        <!-- Events will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- About Page -->
+        <div id="aboutPage" class="page hidden">
+            <section class="section">
+                <div class="container">
+                    <h2 class="section-title">About Our Drama School</h2>
+                    <div style="background: white; padding: 3rem; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">
+                            Sri Shivakumara Ranga Prayoga Shaale Sanehalli stands as a beacon of cultural preservation and artistic excellence in Karnataka. Founded with the vision of nurturing theatrical talent and preserving our rich dramatic traditions, our school has been training aspiring actors, directors, and drama enthusiasts for years.
+                        </p>
+                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">
+                            Our comprehensive curriculum covers all aspects of dramatic arts including acting techniques, voice modulation, stage presence, script writing, direction, and production. We believe in hands-on learning through regular performances and community engagement.
+                        </p>
+                        <p style="font-size: 1.1rem; line-height: 1.8;">
+                            Under the guidance of experienced faculty and industry professionals, our students develop not just technical skills but also a deep appreciation for the cultural significance of theatre in society. Join us in keeping the dramatic arts alive and thriving.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Events Page -->
+        <div id="eventsPage" class="page hidden">
+            <section class="section">
+                <div class="container">
+                    <h2 class="section-title">Drama Events</h2>
+                    <div class="events-grid" id="allEventsGrid">
+                        <!-- Events will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Registration Page -->
+        <div id="registrationPage" class="page hidden">
+            <section class="section">
+                <div class="container">
+                    <h2 class="section-title">Register for Drama</h2>
+                    <div class="registration-box">
+                        <h3 style="color: #8B0000; margin-bottom: 1rem;">Join Our Drama Program</h3>
+                        <p style="margin-bottom: 2rem; color: #666;">Fill out the form below to register for upcoming drama sessions and begin your journey in the dramatic arts.</p>
+                        
+                        <a href="https://forms.gle/your-form" target="_blank" class="btn" style="font-size: 1.1rem; padding: 15px 40px;">Register Now</a>
+                        
+                        <div class="registration-steps">
+                            <h4 style="margin-bottom: 1rem; color: #8B0000;">Registration Steps:</h4>
+                            <ol>
+                                <li>Click the "Register Now" button above</li>
+                                <li>Complete the Google Form with your details</li>
+                                <li>Receive confirmation email within 24 hours</li>
+                                <li>Attend orientation session as scheduled</li>
+                            </ol>
+                        </div>
+                        
+                        <p style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
+                            For any queries regarding registration, please contact us through our contact page or call directly.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contactPage" class="page hidden">
+            <section class="section">
+                <div class="container">
+                    <h2 class="section-title">Contact Us</h2>
+                    <div style="background: white; padding: 3rem; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                            <div>
+                                <h3 style="color: #8B0000; margin-bottom: 1rem;">Get in Touch</h3>
+                                <p style="margin-bottom: 1rem;"><strong>Address:</strong><br>Sri Shivakumara Ranga Prayoga Shaale<br>Sanehalli, Karnataka</p>
+                                <p style="margin-bottom: 1rem;"><strong>Phone:</strong><br>+91 XXXXX XXXXX</p>
+                                <p style="margin-bottom: 1rem;"><strong>Email:</strong><br>info@dramaschool.com</p>
+                                <p><strong>Office Hours:</strong><br>Monday - Saturday: 9:00 AM - 6:00 PM</p>
+                            </div>
+                            <div>
+                                <h3 style="color: #8B0000; margin-bottom: 1rem;">Send Message</h3>
+                                <form>
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Message</label>
+                                        <textarea class="form-control" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn">Send Message</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Admin Login Page -->
+        <div id="adminLoginPage" class="page hidden">
+            <div class="admin-login">
+                <h2 class="text-center mb-2" style="color: #8B0000;">Admin Login</h2>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="adminUsername" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="adminPassword" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Login</button>
+                </form>
+                <div id="loginError" class="alert alert-error hidden">Invalid username or password</div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="page hidden">
+            <div class="admin-dashboard">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 style="color: #8B0000;">Admin Dashboard</h2>
+                    <button onclick="adminLogout()" class="btn btn-danger">Logout</button>
+                </div>
+                
+                <div class="dashboard-nav">
+                    <button onclick="showAdminSection('events')" class="active" id="eventsTabBtn">Manage Events</button>
+                    <button onclick="showAdminSection('photos')" id="photosTabBtn">Manage Photos</button>
+                    <button onclick="showAdminSection('content')" id="contentTabBtn">Manage Content</button>
+                </div>
+
+                <!-- Manage Events Section -->
+                <div id="adminEventsSection" class="admin-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3>Events Management</h3>
+                        <button onclick="openEventModal()" class="btn">Add New Event</button>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminEventsTable">
+                            <!-- Events will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Manage Photos Section -->
+                <div id="adminPhotosSection" class="admin-section hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3>Photos Management</h3>
+                        <button onclick="openPhotoModal()" class="btn">Add Photo</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;" id="adminPhotosGrid">
+                        <!-- Photos will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Manage Content Section -->
+                <div id="adminContentSection" class="admin-section hidden">
+                    <h3>Content Management</h3>
+                    <form id="contentForm">
+                        <div class="form-group">
+                            <label>Hero Title</label>
+                            <input type="text" id="contentHeroTitle" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Hero Text</label>
+                            <textarea id="contentHeroText" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>About Teaser</label>
+                            <textarea id="contentAboutTeaser" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Footer Contact Info</label>
+                            <textarea id="contentFooterInfo" class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p id="footerInfo">&copy; 2025 Sri Shivakumara Ranga Prayoga Shaale Sanehalli. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="eventModalTitle">Add New Event</h3>
+                <span class="close" onclick="closeEventModal()">&times;</span>
+            </div>
+            <form id="eventForm">
+                <input type="hidden" id="eventId">
+                <div class="form-group">
+                    <label>Event Title</label>
+                    <input type="text" id="eventTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Date & Time</label>
+                    <input type="datetime-local" id="eventDateTime" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="eventLocation" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="eventDescription" class="form-control" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Event Image</label>
+                    <div class="file-upload" onclick="document.getElementById('eventImageInput').click()">
+                        <p>Click to upload image</p>
+                        <input type="file" id="eventImageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'eventImagePreview')">
+                    </div>
+                    <div id="eventImagePreview" style="margin-top: 1rem;"></div>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" onclick="closeEventModal()" class="btn" style="background: #6c757d;">Cancel</button>
+                    <button type="submit" class="btn">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Photo Modal -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Photo</h3>
+                <span class="close" onclick="closePhotoModal()">&times;</span>
+            </div>
+            <form id="photoForm">
+                <div class="form-group">
+                    <label>Photo Caption</label>
+                    <input type="text" id="photoCaption" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Photo</label>
+                    <div class="file-upload" onclick="document.getElementById('photoImageInput').click()">
+                        <p>Click to upload photo</p>
+                        <input type="file" id="photoImageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'photoImagePreview')">
+                    </div>
+                    <div id="photoImagePreview" style="margin-top: 1rem;"></div>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" onclick="closePhotoModal()" class="btn" style="background: #6c757d;">Cancel</button>
+                    <button type="submit" class="btn">Save Photo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div id="eventDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="eventDetailsTitle">Event Details</h3>
+                <span class="close" onclick="closeEventDetailsModal()">&times;</span>
+            </div>
+            <div id="eventDetailsContent">
+                <!-- Event details will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let currentPage = 'home';
+        let isAdminLoggedIn = false;
+        let currentAdminSection = 'events';
+        let editingEventId = null;
+
+        // Load data from localStorage or use default values
+        let events = JSON.parse(localStorage.getItem('dramaSchoolEvents')) || [
+            {
+                id: 1,
+                title: "Classical Kannada Drama Performance",
+                date: "2025-06-15T18:00",
+                location: "Main Auditorium, Sanehalli",
+                description: "Experience the beauty of classical Kannada literature brought to life through powerful performances by our senior students.",
+                image: null,
+                status: "upcoming"
+            },
+            {
+                id: 2,
+                title: "Student Showcase Evening",
+                date: "2025-06-25T19:00",
+                location: "School Theatre Hall",
+                description: "A wonderful evening featuring performances by our talented students across various dramatic genres and styles.",
+                image: null,
+                status: "upcoming"
+            },
+            {
+                id: 3,
+                title: "Workshop: Method Acting Techniques",
+                date: "2025-07-05T14:00",
+                location: "Practice Room A",
+                description: "Intensive workshop on method acting techniques led by renowned theatre artist. Open to intermediate and advanced students.",
+                image: null,
+                status: "upcoming"
+            }
+        ];
+
+        let photos = JSON.parse(localStorage.getItem('dramaSchoolPhotos')) || [
+            {
+                id: 1,
+                src: null,
+                caption: "Annual Drama Festival 2024",
+                alt: "Students performing on stage"
+            },
+            {
+                id: 2,
+                src: null,
+                caption: "Workshop with Guest Artist",
+                alt: "Acting workshop in progress"
+            }
+        ];
+
+        let siteContent = JSON.parse(localStorage.getItem('dramaSchoolContent')) || {
+            heroTitle: "Welcome to Our Drama School",
+            heroText: "Discover the art of storytelling through drama, music, and performance at Karnataka's premier drama school.",
+            aboutTeaser: "Sri Shivakumara Ranga Prayoga Shaale Sanehalli is dedicated to preserving and promoting the rich traditions of Kannada theatre while nurturing new talent. Our school provides comprehensive training in various aspects of dramatic arts.",
+            footerInfo: "&copy; 2025 Sri Shivakumara Ranga Prayoga Shaale Sanehalli. All rights reserved."
+        };
+
+        // Save data to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('dramaSchoolEvents', JSON.stringify(events));
+            localStorage.setItem('dramaSchoolPhotos', JSON.stringify(photos));
+            localStorage.setItem('dramaSchoolContent', JSON.stringify(siteContent));
+        }
+
+        // Navigation Functions
+        function toggleMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+
+        function showPage(pageName) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.add('hidden'));
+
+            // Show requested page
+            currentPage = pageName;
+            
+            if (pageName === 'admin') {
+                // Check if admin is logged in
+                if (isAdminLoggedIn) {
+                    document.getElementById('adminDashboard').classList.remove('hidden');
+                    loadAdminData();
+                } else {
+                    document.getElementById('adminLoginPage').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById(pageName + 'Page').classList.remove('hidden');
+                
+                // Load page-specific data
+                if (pageName === 'home') {
+                    loadHomeEvents();
+                } else if (pageName === 'events') {
+                    loadAllEvents();
+                }
+            }
+
+            // Close mobile menu
+            document.getElementById('navMenu').classList.remove('active');
+        }
+
+        // Event Management Functions
+        function loadHomeEvents() {
+            // Load events
+            const container = document.getElementById('homeEventsGrid');
+            const upcomingEvents = events.filter(event => event.status === 'upcoming').slice(0, 3);
+            container.innerHTML = upcomingEvents.map(event => createEventCard(event)).join('');
+            
+            // Add animation to cards
+            const cards = container.querySelectorAll('.event-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, index * 200);
+            });
+
+            // Load photos
+            loadHomePhotos();
+        }
+
+        function loadHomePhotos() {
+            const container = document.getElementById('homePhotoGallery');
+            const recentPhotos = photos.slice(0, 6); // Show up to 6 most recent photos
+            
+            // Create three sets of photos for smooth circular animation
+            const triplicatedPhotos = [...recentPhotos, ...recentPhotos, ...recentPhotos];
+            
+            container.innerHTML = triplicatedPhotos.map(photo => `
+                <div class="gallery-item">
+                    ${photo.src 
+                        ? `<img src="${photo.src}" alt="${photo.alt}">`
+                        : `<div style="width: 100%; height: 250px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #666;">Photo Placeholder</div>`
+                    }
+                    <div class="gallery-caption">
+                        <p>${photo.caption}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add animation to gallery items
+            const items = container.querySelectorAll('.gallery-item');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.add('visible');
+                }, index * 150);
+            });
+
+            // Reset animation when it completes
+            container.addEventListener('animationend', () => {
+                container.style.animation = 'none';
+                container.offsetHeight; // Trigger reflow
+                container.style.animation = 'slideLeft 30s linear infinite';
+            });
+        }
+
+        function loadAllEvents() {
+            const container = document.getElementById('allEventsGrid');
+            container.innerHTML = events.map(event => createEventCard(event, true)).join('');
+            
+            // Add animation to cards
+            const cards = container.querySelectorAll('.event-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, index * 200); // Stagger the animations
+            });
+        }
+
+        function createEventCard(event, showDetails = false) {
+            const eventDate = new Date(event.date);
+            const formattedDate = eventDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const imageHtml = event.image 
+                ? `<img src="${event.image}" alt="${event.title}" style="width: 100%; height: 200px; object-fit: cover;" class="animate-fade-in-up">`
+                : `<div class="event-image animate-fade-in-up">Event Image Placeholder</div>`;
+
+            const detailsButton = showDetails 
+                ? `<button onclick="showEventDetails(${event.id})" class="btn btn-small">View Details</button>`
+                : `<a href="#" onclick="showPage('events')" class="btn btn-small">Learn More</a>`;
+
+            return `
+                <div class="event-card">
+                    ${imageHtml}
+                    <div class="event-info">
+                        <h3>${event.title}</h3>
+                        <div class="event-date">${formattedDate}</div>
+                        <p>${event.description.substring(0, 100)}${event.description.length > 100 ? '...' : ''}</p>
+                        ${detailsButton}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showEventDetails(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (!event) return;
+
+            const eventDate = new Date(event.date);
+            const formattedDate = eventDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            document.getElementById('eventDetailsTitle').textContent = event.title;
+            document.getElementById('eventDetailsContent').innerHTML = `
+                ${event.image ? `<img src="${event.image}" alt="${event.title}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 5px; margin-bottom: 1rem;">` : ''}
+                <p><strong>Date & Time:</strong> ${formattedDate}</p>
+                <p><strong>Location:</strong> ${event.location}</p>
+                <p><strong>Description:</strong> ${event.description}</p>
+                <div style="margin-top: 2rem;">
+                    <a href="https://forms.gle/your-form" target="_blank" class="btn">Register for this Event</a>
+                </div>
+            `;
+            
+            document.getElementById('eventDetailsModal').style.display = 'block';
+        }
+
+        function closeEventDetailsModal() {
+            document.getElementById('eventDetailsModal').style.display = 'none';
+        }
+
+        // Admin Functions
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            // Simple authentication - in production, use proper authentication
+            if (username === 'admin' && password === 'admin123') {
+                isAdminLoggedIn = true;
+                showPage('admin');
+                document.getElementById('loginError').classList.add('hidden');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            showPage('home');
+        }
+
+        function showAdminSection(section) {
+            // Hide all admin sections
+            document.querySelectorAll('.admin-section').forEach(sec => sec.classList.add('hidden'));
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.dashboard-nav button').forEach(btn => btn.classList.remove('active'));
+            
+            // Show requested section
+            currentAdminSection = section;
+            document.getElementById(`admin${section.charAt(0).toUpperCase() + section.slice(1)}Section`).classList.remove('hidden');
+            document.getElementById(`${section}TabBtn`).classList.add('active');
+            
+            // Load section data
+            if (section === 'events') {
+                loadAdminEvents();
+            } else if (section === 'photos') {
+                loadAdminPhotos();
+            } else if (section === 'content') {
+                loadContentForm();
+            }
+        }
+
+        function loadAdminData() {
+            loadAdminEvents();
+        }
+
+        function loadAdminEvents() {
+            const tbody = document.getElementById('adminEventsTable');
+            tbody.innerHTML = events.map(event => {
+                const eventDate = new Date(event.date);
+                const isUpcoming = eventDate > new Date();
+                
+                return `
+                    <tr>
+                        <td>
+                            ${event.image 
+                                ? `<img src="${event.image}" alt="${event.title}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">` 
+                                : `<div style="width: 50px; height: 50px; background: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">No Image</div>`
+                            }
+                        </td>
+                        <td>${event.title}</td>
+                        <td>${eventDate.toLocaleDateString()}</td>
+                        <td>
+                            <span style="color: ${isUpcoming ? '#28a745' : '#6c757d'};">
+                                ${isUpcoming ? 'Upcoming' : 'Past'}
+                            </span>
+                        </td>
+                        <td>
+                            <button onclick="editEvent(${event.id})" class="btn btn-small">Edit</button>
+                            <button onclick="deleteEvent(${event.id})" class="btn btn-small btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function loadAdminPhotos() {
+            const container = document.getElementById('adminPhotosGrid');
+            container.innerHTML = photos.map(photo => `
+                <div style="background: white; border-radius: 5px; padding: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    ${photo.src 
+                        ? `<img src="${photo.src}" alt="${photo.alt}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px;">` 
+                        : `<div style="width: 100%; height: 150px; background: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #666;">Photo Placeholder</div>`
+                    }
+                    <p style="margin: 0.5rem 0; font-size: 0.9rem;">${photo.caption}</p>
+                    <button onclick="deletePhoto(${photo.id})" class="btn btn-small btn-danger" style="width: 100%;">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function loadContentForm() {
+            document.getElementById('contentHeroTitle').value = siteContent.heroTitle;
+            document.getElementById('contentHeroText').value = siteContent.heroText;
+            document.getElementById('contentAboutTeaser').value = siteContent.aboutTeaser;
+            document.getElementById('contentFooterInfo').value = siteContent.footerInfo;
+        }
+
+        // Modal Functions
+        function openEventModal(eventId = null) {
+            editingEventId = eventId;
+            const modal = document.getElementById('eventModal');
+            const form = document.getElementById('eventForm');
+            
+            if (eventId) {
+                const event = events.find(e => e.id === eventId);
+                document.getElementById('eventModalTitle').textContent = 'Edit Event';
+                document.getElementById('eventId').value = event.id;
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventDateTime').value = event.date;
+                document.getElementById('eventLocation').value = event.location;
+                document.getElementById('eventDescription').value = event.description;
+                
+                if (event.image) {
+                    document.getElementById('eventImagePreview').innerHTML = 
+                        `<img src="${event.image}" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">`;
+                }
+            } else {
+                document.getElementById('eventModalTitle').textContent = 'Add New Event';
+                form.reset();
+                document.getElementById('eventImagePreview').innerHTML = '';
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeEventModal() {
+            document.getElementById('eventModal').style.display = 'none';
+            editingEventId = null;
+        }
+
+        function openPhotoModal() {
+            document.getElementById('photoModal').style.display = 'block';
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photoModal').style.display = 'none';
+            document.getElementById('photoForm').reset();
+            document.getElementById('photoImagePreview').innerHTML = '';
+        }
+
+        function editEvent(eventId) {
+            openEventModal(eventId);
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                events = events.filter(e => e.id !== eventId);
+                loadAdminEvents();
+                showAlert('Event deleted successfully', 'success');
+            }
+        }
+
+        function deletePhoto(photoId) {
+            if (confirm('Are you sure you want to delete this photo?')) {
+                photos = photos.filter(p => p.id !== photoId);
+                loadAdminPhotos();
+                showAlert('Photo deleted successfully', 'success');
+            }
+        }
+
+        // Form Handlers
+        function handleImageUpload(input, previewId) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(previewId).innerHTML = 
+                        `<img src="${e.target.result}" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveEvent() {
+            const form = document.getElementById('eventForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return false;
+            }
+
+            const eventData = {
+                title: document.getElementById('eventTitle').value,
+                date: document.getElementById('eventDateTime').value,
+                location: document.getElementById('eventLocation').value,
+                description: document.getElementById('eventDescription').value,
+                status: new Date(document.getElementById('eventDateTime').value) > new Date() ? 'upcoming' : 'past'
+            };
+
+            // Handle image upload
+            const imageInput = document.getElementById('eventImageInput');
+            if (imageInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    eventData.image = e.target.result;
+                    processEventSave(eventData);
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                if (editingEventId) {
+                    const existingEvent = events.find(e => e.id === editingEventId);
+                    eventData.image = existingEvent.image;
+                }
+                processEventSave(eventData);
+            }
+
+            return false;
+        }
+
+        function processEventSave(eventData) {
+            if (editingEventId) {
+                const eventIndex = events.findIndex(e => e.id === editingEventId);
+                events[eventIndex] = { ...events[eventIndex], ...eventData };
+                showAlert('Event updated successfully', 'success');
+            } else {
+                const newEvent = {
+                    id: Math.max(...events.map(e => e.id), 0) + 1,
+                    ...eventData
+                };
+                events.push(newEvent);
+                showAlert('Event added successfully', 'success');
+            }
+
+            saveToLocalStorage(); // Save to localStorage
+            closeEventModal();
+            loadAdminEvents();
+            
+            // Refresh other views if needed
+            if (currentPage === 'home') loadHomeEvents();
+            if (currentPage === 'events') loadAllEvents();
+        }
+
+        function savePhoto() {
+            const form = document.getElementById('photoForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return false;
+            }
+
+            const caption = document.getElementById('photoCaption').value;
+            const imageInput = document.getElementById('photoImageInput');
+            
+            if (!imageInput.files[0]) {
+                showAlert('Please select a photo', 'error');
+                return false;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const newPhoto = {
+                    id: Math.max(...photos.map(p => p.id), 0) + 1,
+                    src: e.target.result,
+                    caption: caption,
+                    alt: caption
+                };
+                
+                photos.push(newPhoto);
+                saveToLocalStorage(); // Save to localStorage
+                loadAdminPhotos();
+                closePhotoModal();
+                showAlert('Photo added successfully', 'success');
+
+                // Update home page gallery if we're on the home page
+                if (currentPage === 'home') {
+                    loadHomePhotos();
+                }
+            };
+            reader.readAsDataURL(imageInput.files[0]);
+
+            return false;
+        }
+
+        function saveContent() {
+            siteContent.heroTitle = document.getElementById('contentHeroTitle').value;
+            siteContent.heroText = document.getElementById('contentHeroText').value;
+            siteContent.aboutTeaser = document.getElementById('contentAboutTeaser').value;
+            siteContent.footerInfo = document.getElementById('contentFooterInfo').value;
+
+            saveToLocalStorage(); // Save to localStorage
+
+            // Update the actual page content
+            document.getElementById('heroTitle').textContent = siteContent.heroTitle;
+            document.getElementById('heroText').textContent = siteContent.heroText;
+            document.getElementById('aboutTeaser').textContent = siteContent.aboutTeaser;
+            document.getElementById('footerInfo').innerHTML = siteContent.footerInfo;
+
+            showAlert('Content updated successfully', 'success');
+            return false;
+        }
+
+        // Utility Functions
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '100px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '9999';
+            alertDiv.style.minWidth = '300px';
+
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the page
+            showPage('home');
+
+            // Admin login form
+            document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                adminLogin();
+            });
+
+            // Event form
+            document.getElementById('eventForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveEvent();
+            });
+
+            // Photo form
+            document.getElementById('photoForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                savePhoto();
+            });
+
+            // Content form
+            document.getElementById('contentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveContent();
+            });
+
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                const modals = ['eventModal', 'photoModal', 'eventDetailsModal'];
+                modals.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+
+            // Load initial content
+            loadHomeEvents();
+        });
+
+        // Form validation for admin event form
+        function validateEventForm() {
+            const title = document.getElementById('eventTitle').value.trim();
+            const date = document.getElementById('eventDateTime').value;
+            
+            if (!title) {
+                showAlert('Please enter event title', 'error');
+                return false;
+            }
+            
+            if (!date) {
+                showAlert('Please select event date and time', 'error');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Search functionality (can be extended)
+        function searchEvents(query) {
+            return events.filter(event => 
+                event.title.toLowerCase().includes(query.toLowerCase()) ||
+                event.description.toLowerCase().includes(query.toLowerCase())
+            );
+        }
+
+        // Export functionality for admin (saves data as JSON)
+        function exportData() {
+            const data = {
+                events: events,
+                photos: photos,
+                siteContent: siteContent,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'drama_school_data.json';
+            link.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        // Import functionality for admin
+        function importData(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.events) events = data.events;
+                    if (data.photos) photos = data.photos;
+                    if (data.siteContent) siteContent = data.siteContent;
+                    
+                    // Refresh all admin sections
+                    loadAdminData();
+                    loadContentForm();
+                    
+                    showAlert('Data imported successfully', 'success');
+                } catch (error) {
+                    showAlert('Error importing data: Invalid file format', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
