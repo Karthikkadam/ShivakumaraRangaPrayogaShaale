@@ -650,7 +650,11 @@
                     <li><a href="#" onclick="showPage('events')">Events</a></li>
                     <li><a href="#" onclick="showPage('registration')">Registration</a></li>
                     <li><a href="#" onclick="showPage('contact')">Contact</a></li>
-                    <li><a href="#" onclick="showPage('admin')">Admin</a></li>
+                    <li
+
+ 
+
+><a href="#" onclick="showPage('admin')">Admin</a></li>
                 </ul>
                 <div class="hamburger" onclick="toggleMenu()">
                     <span></span>
@@ -899,7 +903,7 @@
         <div class="footer-content">
             <p id="footerInfo">
                 Contact: 9448398144 (Madhu E)<br>
-                &copy; 2025 Sri Shivakumara Ranga Prayoga Shaale Sanehalli. All rights reserved.
+                © 2025 Sri Shivakumara Ranga Prayoga Shaale Sanehalli. All rights reserved.
             </p>
         </div>
     </footer>
@@ -909,31 +913,31 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="eventModalTitle">Add New Event</h3>
-                <span class="close" onclick="closeEventModal()">&times;</span>
+                <span class="close" onclick="closeEventModal()">×</span>
             </div>
             <form id="eventForm">
                 <input type="hidden" id="eventId">
                 <div class="form-group">
                     <label>Event Title</label>
-                    <input type="text" id="eventTitle" class="form-control" required>
+                    <input type="text" id="eventTitle" name="title" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Date & Time</label>
-                    <input type="datetime-local" id="eventDateTime" class="form-control" required>
+                    <input type="datetime-local" id="eventDateTime" name="date" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Location</label>
-                    <input type="text" id="eventLocation" class="form-control" required>
+                    <input type="text" id="eventLocation" name="location" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea id="eventDescription" class="form-control" required></textarea>
+                    <textarea id="eventDescription" name="description" class="form-control" required></textarea>
                 </div>
                 <div class="form-group">
                     <label>Event Image</label>
                     <div class="file-upload" onclick="document.getElementById('eventImageInput').click()">
                         <p>Click to upload image</p>
-                        <input type="file" id="eventImageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'eventImagePreview')">
+                        <input type="file" id="eventImageInput" name="image" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'eventImagePreview')">
                     </div>
                     <div id="eventImagePreview" style="margin-top: 1rem;"></div>
                 </div>
@@ -950,18 +954,18 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Add Photo</h3>
-                <span class="close" onclick="closePhotoModal()">&times;</span>
+                <span class="close" onclick="closePhotoModal()">×</span>
             </div>
             <form id="photoForm">
                 <div class="form-group">
                     <label>Photo Caption</label>
-                    <input type="text" id="photoCaption" class="form-control" required>
+                    <input type="text" id="photoCaption" name="caption" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Photo</label>
                     <div class="file-upload" onclick="document.getElementById('photoImageInput').click()">
                         <p>Click to upload photo</p>
-                        <input type="file" id="photoImageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'photoImagePreview')">
+                        <input type="file" id="photoImageInput" name="image" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'photoImagePreview')">
                     </div>
                     <div id="photoImagePreview" style="margin-top: 1rem;"></div>
                 </div>
@@ -978,7 +982,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="eventDetailsTitle">Event Details</h3>
-                <span class="close" onclick="closeEventDetailsModal()">&times;</span>
+                <span class="close" onclick="closeEventDetailsModal()">×</span>
             </div>
             <div id="eventDetailsContent">
                 <!-- Event details will be populated by JavaScript -->
@@ -998,64 +1002,49 @@
         let currentAdminSection = 'events';
         let editingEventId = null;
 
-        // Load data from localStorage or use default values
-        let events = JSON.parse(localStorage.getItem('dramaSchoolEvents')) || [
-            {
-                id: 1,
-                title: "Classical Kannada Drama Performance",
-                date: "2025-06-15T18:00",
-                location: "Main Auditorium, Sanehalli",
-                description: "Experience the beauty of classical Kannada literature brought to life through powerful performances by our senior students.",
-                image: null,
-                status: "upcoming"
-            },
-            {
-                id: 2,
-                title: "Student Showcase Evening",
-                date: "2025-06-25T19:00",
-                location: "School Theatre Hall",
-                description: "A wonderful evening featuring performances by our talented students across various dramatic genres and styles.",
-                image: null,
-                status: "upcoming"
-            },
-            {
-                id: 3,
-                title: "Workshop: Method Acting Techniques",
-                date: "2025-07-05T14:00",
-                location: "Practice Room A",
-                description: "Intensive workshop on method acting techniques led by renowned theatre artist. Open to intermediate and advanced students.",
-                image: null,
-                status: "upcoming"
+        // Initialize data as empty arrays/objects, to be populated from server
+        let events = [];
+        let photos = [];
+        let siteContent = {};
+
+        // Load data from server
+        async function loadEvents() {
+            try {
+                const response = await fetch('/api/events');
+                if (response.ok) {
+                    events = await response.json();
+                } else {
+                    console.error('Failed to load events');
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
             }
-        ];
+        }
 
-        let photos = JSON.parse(localStorage.getItem('dramaSchoolPhotos')) || [
-            {
-                id: 1,
-                src: null,
-                caption: "Annual Drama Festival 2024",
-                alt: "Students performing on stage"
-            },
-            {
-                id: 2,
-                src: null,
-                caption: "Workshop with Guest Artist",
-                alt: "Acting workshop in progress"
+        async function loadPhotos() {
+            try {
+                const response = await fetch('/api/photos');
+                if (response.ok) {
+                    photos = await response.json();
+                } else {
+                    console.error('Failed to load photos');
+                }
+            } catch (error) {
+                console.error('Error loading photos:', error);
             }
-        ];
+        }
 
-        let siteContent = JSON.parse(localStorage.getItem('dramaSchoolContent')) || {
-            heroTitle: "Welcome to Our Drama School",
-            heroText: "Discover the art of storytelling through drama, music, and performance at Karnataka's premier drama school.",
-            aboutTeaser: "Sri Shivakumara Ranga Prayoga Shaale Sanehalli is dedicated to preserving and promoting the rich traditions of Kannada theatre while nurturing new talent. Our school provides comprehensive training in various aspects of dramatic arts.",
-            footerInfo: "&copy; 2025 Sri Shivakumara Ranga Prayoga Shaale Sanehalli. All rights reserved."
-        };
-
-        // Save data to localStorage
-        function saveToLocalStorage() {
-            localStorage.setItem('dramaSchoolEvents', JSON.stringify(events));
-            localStorage.setItem('dramaSchoolPhotos', JSON.stringify(photos));
-            localStorage.setItem('dramaSchoolContent', JSON.stringify(siteContent));
+        async function loadContent() {
+            try {
+                const response = await fetch('/api/content');
+                if (response.ok) {
+                    siteContent = await response.json();
+                } else {
+                    console.error('Failed to load content');
+                }
+            } catch (error) {
+                console.error('Error loading content:', error);
+            }
         }
 
         // Navigation Functions
@@ -1064,45 +1053,39 @@
             navMenu.classList.toggle('active');
         }
 
-        function showPage(pageName) {
-            // Hide all pages
+        async function showPage(pageName) {
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => page.classList.add('hidden'));
 
-            // Show requested page
             currentPage = pageName;
-            
+
             if (pageName === 'admin') {
-                // Check if admin is logged in
                 if (isAdminLoggedIn) {
                     document.getElementById('adminDashboard').classList.remove('hidden');
-                    loadAdminData();
+                    await loadAdminData();
                 } else {
                     document.getElementById('adminLoginPage').classList.remove('hidden');
                 }
             } else {
                 document.getElementById(pageName + 'Page').classList.remove('hidden');
-                
-                // Load page-specific data
                 if (pageName === 'home') {
-                    loadHomeEvents();
+                    await loadHomeEvents();
                 } else if (pageName === 'events') {
-                    loadAllEvents();
+                    await loadAllEvents();
                 }
             }
 
-            // Close mobile menu
             document.getElementById('navMenu').classList.remove('active');
         }
 
         // Event Management Functions
-        function loadHomeEvents() {
-            // Load events
+        async function loadHomeEvents() {
+            await loadEvents();
+            await loadPhotos();
             const container = document.getElementById('homeEventsGrid');
-            const upcomingEvents = events.filter(event => event.status === 'upcoming').slice(0, 3);
+            const upcomingEvents = events.filter(event => new Date(event.date) > new Date()).slice(0, 3);
             container.innerHTML = upcomingEvents.map(event => createEventCard(event)).join('');
-            
-            // Add animation to cards
+
             const cards = container.querySelectorAll('.event-card');
             cards.forEach((card, index) => {
                 setTimeout(() => {
@@ -1110,21 +1093,18 @@
                 }, index * 200);
             });
 
-            // Load photos
             loadHomePhotos();
         }
 
         function loadHomePhotos() {
             const container = document.getElementById('homePhotoGallery');
-            const recentPhotos = photos.slice(0, 6); // Show up to 6 most recent photos
-            
-            // Create three sets of photos for smooth circular animation
+            const recentPhotos = photos.slice(0, 6);
             const triplicatedPhotos = [...recentPhotos, ...recentPhotos, ...recentPhotos];
-            
+
             container.innerHTML = triplicatedPhotos.map(photo => `
                 <div class="gallery-item">
-                    ${photo.src 
-                        ? `<img src="${photo.src}" alt="${photo.alt}">`
+                    ${photo.imageUrl 
+                        ? `<img src="${photo.imageUrl}" alt="${photo.caption}">`
                         : `<div style="width: 100%; height: 250px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #666;">Photo Placeholder</div>`
                     }
                     <div class="gallery-caption">
@@ -1133,7 +1113,6 @@
                 </div>
             `).join('');
 
-            // Add animation to gallery items
             const items = container.querySelectorAll('.gallery-item');
             items.forEach((item, index) => {
                 setTimeout(() => {
@@ -1141,24 +1120,23 @@
                 }, index * 150);
             });
 
-            // Reset animation when it completes
             container.addEventListener('animationend', () => {
                 container.style.animation = 'none';
-                container.offsetHeight; // Trigger reflow
+                container.offsetHeight;
                 container.style.animation = 'slideLeft 30s linear infinite';
             });
         }
 
-        function loadAllEvents() {
+        async function loadAllEvents() {
+            await loadEvents();
             const container = document.getElementById('allEventsGrid');
             container.innerHTML = events.map(event => createEventCard(event, true)).join('');
-            
-            // Add animation to cards
+
             const cards = container.querySelectorAll('.event-card');
             cards.forEach((card, index) => {
                 setTimeout(() => {
                     card.classList.add('visible');
-                }, index * 200); // Stagger the animations
+                }, index * 200);
             });
         }
 
@@ -1173,12 +1151,12 @@
                 minute: '2-digit'
             });
 
-            const imageHtml = event.image 
-                ? `<img src="${event.image}" alt="${event.title}" style="width: 100%; height: 200px; object-fit: cover;" class="animate-fade-in-up">`
+            const imageHtml = event.imageUrl 
+                ? `<img src="${event.imageUrl}" alt="${event.title}" style="width: 100%; height: 200px; object-fit: cover;" class="animate-fade-in-up">`
                 : `<div class="event-image animate-fade-in-up">Event Image Placeholder</div>`;
 
             const detailsButton = showDetails 
-                ? `<button onclick="showEventDetails(${event.id})" class="btn btn-small">View Details</button>`
+                ? `<button onclick="showEventDetails('${event.id}')" class="btn btn-small">View Details</button>`
                 : `<a href="#" onclick="showPage('events')" class="btn btn-small">Learn More</a>`;
 
             return `
@@ -1210,7 +1188,7 @@
 
             document.getElementById('eventDetailsTitle').textContent = event.title;
             document.getElementById('eventDetailsContent').innerHTML = `
-                ${event.image ? `<img src="${event.image}" alt="${event.title}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 5px; margin-bottom: 1rem;">` : ''}
+                ${event.imageUrl ? `<img src="${event.imageUrl}" alt="${event.title}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 5px; margin-bottom: 1rem;">` : ''}
                 <p><strong>Date & Time:</strong> ${formattedDate}</p>
                 <p><strong>Location:</strong> ${event.location}</p>
                 <p><strong>Description:</strong> ${event.description}</p>
@@ -1230,8 +1208,7 @@
         function adminLogin() {
             const username = document.getElementById('adminUsername').value;
             const password = document.getElementById('adminPassword').value;
-            
-            // Simple authentication - in production, use proper authentication
+
             if (username === 'admin' && password === 'admin123') {
                 isAdminLoggedIn = true;
                 showPage('admin');
@@ -1246,43 +1223,39 @@
             showPage('home');
         }
 
-        function showAdminSection(section) {
-            // Hide all admin sections
+        async function showAdminSection(section) {
             document.querySelectorAll('.admin-section').forEach(sec => sec.classList.add('hidden'));
-            
-            // Remove active class from all buttons
             document.querySelectorAll('.dashboard-nav button').forEach(btn => btn.classList.remove('active'));
-            
-            // Show requested section
+
             currentAdminSection = section;
             document.getElementById(`admin${section.charAt(0).toUpperCase() + section.slice(1)}Section`).classList.remove('hidden');
             document.getElementById(`${section}TabBtn`).classList.add('active');
-            
-            // Load section data
+
             if (section === 'events') {
-                loadAdminEvents();
+                await loadAdminEvents();
             } else if (section === 'photos') {
-                loadAdminPhotos();
+                await loadAdminPhotos();
             } else if (section === 'content') {
                 loadContentForm();
             }
         }
 
-        function loadAdminData() {
-            loadAdminEvents();
+        async function loadAdminData() {
+            await loadAdminEvents();
         }
 
-        function loadAdminEvents() {
+        async function loadAdminEvents() {
+            await loadEvents();
             const tbody = document.getElementById('adminEventsTable');
             tbody.innerHTML = events.map(event => {
                 const eventDate = new Date(event.date);
                 const isUpcoming = eventDate > new Date();
-                
+
                 return `
                     <tr>
                         <td>
-                            ${event.image 
-                                ? `<img src="${event.image}" alt="${event.title}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">` 
+                            ${event.imageUrl 
+                                ? `<img src="${event.imageUrl}" alt="${event.title}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">` 
                                 : `<div style="width: 50px; height: 50px; background: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">No Image</div>`
                             }
                         </td>
@@ -1294,33 +1267,34 @@
                             </span>
                         </td>
                         <td>
-                            <button onclick="editEvent(${event.id})" class="btn btn-small">Edit</button>
-                            <button onclick="deleteEvent(${event.id})" class="btn btn-small btn-danger">Delete</button>
+                            <button onclick="editEvent('${event.id}')" class="btn btn-small">Edit</button>
+                            <button onclick="deleteEvent('${event.id}')" class="btn btn-small btn-danger">Delete</button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        function loadAdminPhotos() {
+        async function loadAdminPhotos() {
+            await loadPhotos();
             const container = document.getElementById('adminPhotosGrid');
             container.innerHTML = photos.map(photo => `
                 <div style="background: white; border-radius: 5px; padding: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    ${photo.src 
-                        ? `<img src="${photo.src}" alt="${photo.alt}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px;">` 
+                    ${photo.imageUrl 
+                        ? `<img src="${photo.imageUrl}" alt="${photo.caption}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px;">` 
                         : `<div style="width: 100%; height: 150px; background: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #666;">Photo Placeholder</div>`
                     }
                     <p style="margin: 0.5rem 0; font-size: 0.9rem;">${photo.caption}</p>
-                    <button onclick="deletePhoto(${photo.id})" class="btn btn-small btn-danger" style="width: 100%;">Delete</button>
+                    <button onclick="deletePhoto('${photo.id}')" class="btn btn-small btn-danger" style="width: 100%;">Delete</button>
                 </div>
             `).join('');
         }
 
         function loadContentForm() {
-            document.getElementById('contentHeroTitle').value = siteContent.heroTitle;
-            document.getElementById('contentHeroText').value = siteContent.heroText;
-            document.getElementById('contentAboutTeaser').value = siteContent.aboutTeaser;
-            document.getElementById('contentFooterInfo').value = siteContent.footerInfo;
+            document.getElementById('contentHeroTitle').value = siteContent.heroTitle || '';
+            document.getElementById('contentHeroText').value = siteContent.heroText || '';
+            document.getElementById('contentAboutTeaser').value = siteContent.aboutTeaser || '';
+            document.getElementById('contentFooterInfo').value = siteContent.footerInfo || '';
         }
 
         // Modal Functions
@@ -1328,26 +1302,28 @@
             editingEventId = eventId;
             const modal = document.getElementById('eventModal');
             const form = document.getElementById('eventForm');
-            
+
             if (eventId) {
                 const event = events.find(e => e.id === eventId);
                 document.getElementById('eventModalTitle').textContent = 'Edit Event';
                 document.getElementById('eventId').value = event.id;
                 document.getElementById('eventTitle').value = event.title;
-                document.getElementById('eventDateTime').value = event.date;
+                document.getElementById('eventDateTime').value = event.date.slice(0, 16);
                 document.getElementById('eventLocation').value = event.location;
                 document.getElementById('eventDescription').value = event.description;
-                
-                if (event.image) {
+
+                if (event.imageUrl) {
                     document.getElementById('eventImagePreview').innerHTML = 
-                        `<img src="${event.image}" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">`;
+                        `<img src="${event.imageUrl}" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">`;
+                } else {
+                    document.getElementById('eventImagePreview').innerHTML = '';
                 }
             } else {
                 document.getElementById('eventModalTitle').textContent = 'Add New Event';
                 form.reset();
                 document.getElementById('eventImagePreview').innerHTML = '';
             }
-            
+
             modal.style.display = 'block';
         }
 
@@ -1370,19 +1346,50 @@
             openEventModal(eventId);
         }
 
-        function deleteEvent(eventId) {
+        async function deleteEvent(eventId) {
             if (confirm('Are you sure you want to delete this event?')) {
-                events = events.filter(e => e.id !== eventId);
-                loadAdminEvents();
-                showAlert('Event deleted successfully', 'success');
+                try {
+                    const response = await fetch(`/api/events/${eventId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showAlert('Event deleted successfully', 'success');
+                        await loadEvents();
+                        await loadAdminEvents();
+                        if (currentPage === 'home') await loadHomeEvents();
+                        if (currentPage === 'events') await loadAllEvents();
+                    } else {
+                        const error = await response.json();
+                        showAlert(error.error || 'Failed to delete event', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting event:', error);
+                    showAlert('Error deleting event', 'error');
+                }
             }
         }
 
-        function deletePhoto(photoId) {
+        async function deletePhoto(photoId) {
             if (confirm('Are you sure you want to delete this photo?')) {
-                photos = photos.filter(p => p.id !== photoId);
-                loadAdminPhotos();
-                showAlert('Photo deleted successfully', 'success');
+                try {
+                    const response = await fetch(`/api/photos/${photoId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showAlert('Photo deleted successfully', 'success');
+                        await loadPhotos();
+                        await loadAdminPhotos();
+                        if (currentPage === 'home') loadHomePhotos();
+                    } else {
+                        const error = await response.json();
+                        showAlert(error.error || 'Failed to delete photo', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting photo:', error);
+                    showAlert('Error deleting photo', 'error');
+                }
             }
         }
 
@@ -1399,120 +1406,109 @@
             }
         }
 
-        function saveEvent() {
+        async function saveEvent() {
             const form = document.getElementById('eventForm');
             if (!form.checkValidity()) {
                 form.reportValidity();
-                return false;
+                return;
             }
 
-            const eventData = {
-                title: document.getElementById('eventTitle').value,
-                date: document.getElementById('eventDateTime').value,
-                location: document.getElementById('eventLocation').value,
-                description: document.getElementById('eventDescription').value,
-                status: new Date(document.getElementById('eventDateTime').value) > new Date() ? 'upcoming' : 'past'
-            };
+            const formData = new FormData(form);
 
-            // Handle image upload
-            const imageInput = document.getElementById('eventImageInput');
-            if (imageInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    eventData.image = e.target.result;
-                    processEventSave(eventData);
-                };
-                reader.readAsDataURL(imageInput.files[0]);
-            } else {
+            try {
+                let url = '/api/events';
+                let method = 'POST';
+
                 if (editingEventId) {
-                    const existingEvent = events.find(e => e.id === editingEventId);
-                    eventData.image = existingEvent.image;
+                    url = `/api/events/${editingEventId}`;
+                    method = 'PUT';
                 }
-                processEventSave(eventData);
-            }
 
-            return false;
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData
+                });
+
+                if (response.ok) {
+                    showAlert(editingEventId ? 'Event updated successfully' : 'Event added successfully', 'success');
+                    closeEventModal();
+                    await loadEvents();
+                    await loadAdminEvents();
+                    if (currentPage === 'home') await loadHomeEvents();
+                    if (currentPage === 'events') await loadAllEvents();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.error || 'Failed to save event', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving event:', error);
+                showAlert('Error saving event', 'error');
+            }
         }
 
-        function processEventSave(eventData) {
-            if (editingEventId) {
-                const eventIndex = events.findIndex(e => e.id === editingEventId);
-                events[eventIndex] = { ...events[eventIndex], ...eventData };
-                showAlert('Event updated successfully', 'success');
-            } else {
-                const newEvent = {
-                    id: Math.max(...events.map(e => e.id), 0) + 1,
-                    ...eventData
-                };
-                events.push(newEvent);
-                showAlert('Event added successfully', 'success');
-            }
-
-            saveToLocalStorage(); // Save to localStorage
-            closeEventModal();
-            loadAdminEvents();
-            
-            // Refresh other views if needed
-            if (currentPage === 'home') loadHomeEvents();
-            if (currentPage === 'events') loadAllEvents();
-        }
-
-        function savePhoto() {
+        async function savePhoto() {
             const form = document.getElementById('photoForm');
             if (!form.checkValidity()) {
                 form.reportValidity();
-                return false;
+                return;
             }
 
-            const caption = document.getElementById('photoCaption').value;
-            const imageInput = document.getElementById('photoImageInput');
-            
-            if (!imageInput.files[0]) {
-                showAlert('Please select a photo', 'error');
-                return false;
-            }
+            const formData = new FormData(form);
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const newPhoto = {
-                    id: Math.max(...photos.map(p => p.id), 0) + 1,
-                    src: e.target.result,
-                    caption: caption,
-                    alt: caption
-                };
-                
-                photos.push(newPhoto);
-                saveToLocalStorage(); // Save to localStorage
-                loadAdminPhotos();
-                closePhotoModal();
-                showAlert('Photo added successfully', 'success');
+            try {
+                const response = await fetch('/api/photos', {
+                    method: 'POST',
+                    body: formData
+                });
 
-                // Update home page gallery if we're on the home page
-                if (currentPage === 'home') {
-                    loadHomePhotos();
+                if (response.ok) {
+                    showAlert('Photo added successfully', 'success');
+                    closePhotoModal();
+                    await loadPhotos();
+                    await loadAdminPhotos();
+                    if (currentPage === 'home') loadHomePhotos();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.error || 'Failed to add photo', 'error');
                 }
-            };
-            reader.readAsDataURL(imageInput.files[0]);
-
-            return false;
+            } catch (error) {
+                console.error('Error adding photo:', error);
+                showAlert('Error adding photo', 'error');
+            }
         }
 
-        function saveContent() {
-            siteContent.heroTitle = document.getElementById('contentHeroTitle').value;
-            siteContent.heroText = document.getElementById('contentHeroText').value;
-            siteContent.aboutTeaser = document.getElementById('contentAboutTeaser').value;
-            siteContent.footerInfo = document.getElementById('contentFooterInfo').value;
+        async function saveContent() {
+            const contentData = {
+                heroTitle: document.getElementById('contentHeroTitle').value,
+                heroText: document.getElementById('contentHeroText').value,
+                aboutTeaser: document.getElementById('contentAboutTeaser').value,
+                footerInfo: document.getElementById('contentFooterInfo').value
+            };
 
-            saveToLocalStorage(); // Save to localStorage
+            try {
+                const response = await fetch('/api/content', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(contentData)
+                });
 
-            // Update the actual page content
-            document.getElementById('heroTitle').textContent = siteContent.heroTitle;
-            document.getElementById('heroText').textContent = siteContent.heroText;
-            document.getElementById('aboutTeaser').textContent = siteContent.aboutTeaser;
-            document.getElementById('footerInfo').innerHTML = siteContent.footerInfo;
-
-            showAlert('Content updated successfully', 'success');
-            return false;
+                if (response.ok) {
+                    siteContent = await response.json();
+                    document.getElementById('heroTitle').textContent = siteContent.heroTitle;
+                    document.getElementById('heroText').textContent = siteContent.heroText;
+                    document.getElementById('aboutTeaser').textContent = siteContent.aboutTeaser;
+                    document.getElementById('footerInfo').innerHTML = siteContent.footerInfo;
+                    showAlert('Content updated successfully', 'success');
+                } else {
+                    const error = await response.json();
+                    showAlert(error.error || 'Failed to update content', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating content:', error);
+                showAlert('Error updating content', 'error');
+            }
         }
 
         // Utility Functions
@@ -1534,35 +1530,34 @@
         }
 
         // Event Listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize the page
+        document.addEventListener('DOMContentLoaded', async function() {
+            await Promise.all([loadEvents(), loadPhotos(), loadContent()]);
+            document.getElementById('heroTitle').textContent = siteContent.heroTitle || 'Welcome to Our Drama School';
+            document.getElementById('heroText').textContent = siteContent.heroText || 'Discover the art of storytelling through drama, music, and performance at Karnataka\'s premier drama school.';
+            document.getElementById('aboutTeaser').textContent = siteContent.aboutTeaser || 'Sri Shivakumara Ranga Prayoga Shaale Sanehalli is dedicated to preserving and promoting the rich traditions of Kannada theatre while nurturing new talent.';
+            document.getElementById('footerInfo').innerHTML = siteContent.footerInfo || 'Contact: 9448398144 (Madhu E)<br>© 2025 Sri Shivakumara Ranga Prayoga Shaale Sanehalli. All rights reserved.';
             showPage('home');
 
-            // Admin login form
             document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 adminLogin();
             });
 
-            // Event form
-            document.getElementById('eventForm').addEventListener('submit', function(e) {
+            document.getElementById('eventForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
-                saveEvent();
+                await saveEvent();
             });
 
-            // Photo form
-            document.getElementById('photoForm').addEventListener('submit', function(e) {
+            document.getElementById('photoForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
-                savePhoto();
+                await savePhoto();
             });
 
-            // Content form
-            document.getElementById('contentForm').addEventListener('submit', function(e) {
+            document.getElementById('contentForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
-                saveContent();
+                await saveContent();
             });
 
-            // Close modals when clicking outside
             window.addEventListener('click', function(e) {
                 const modals = ['eventModal', 'photoModal', 'eventDetailsModal'];
                 modals.forEach(modalId => {
@@ -1572,80 +1567,7 @@
                     }
                 });
             });
-
-            // Load initial content
-            loadHomeEvents();
         });
-
-        // Form validation for admin event form
-        function validateEventForm() {
-            const title = document.getElementById('eventTitle').value.trim();
-            const date = document.getElementById('eventDateTime').value;
-            
-            if (!title) {
-                showAlert('Please enter event title', 'error');
-                return false;
-            }
-            
-            if (!date) {
-                showAlert('Please select event date and time', 'error');
-                return false;
-            }
-            
-            return true;
-        }
-
-        // Search functionality (can be extended)
-        function searchEvents(query) {
-            return events.filter(event => 
-                event.title.toLowerCase().includes(query.toLowerCase()) ||
-                event.description.toLowerCase().includes(query.toLowerCase())
-            );
-        }
-
-        // Export functionality for admin (saves data as JSON)
-        function exportData() {
-            const data = {
-                events: events,
-                photos: photos,
-                siteContent: siteContent,
-                exportDate: new Date().toISOString()
-            };
-            
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'drama_school_data.json';
-            link.click();
-            
-            URL.revokeObjectURL(url);
-        }
-
-        // Import functionality for admin
-        function importData(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    
-                    if (data.events) events = data.events;
-                    if (data.photos) photos = data.photos;
-                    if (data.siteContent) siteContent = data.siteContent;
-                    
-                    // Refresh all admin sections
-                    loadAdminData();
-                    loadContentForm();
-                    
-                    showAlert('Data imported successfully', 'success');
-                } catch (error) {
-                    showAlert('Error importing data: Invalid file format', 'error');
-                }
-            };
-            reader.readAsText(file);
-        }
     </script>
 </body>
 </html>
