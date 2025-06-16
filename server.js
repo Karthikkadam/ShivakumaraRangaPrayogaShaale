@@ -4,13 +4,13 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Enable CORS
 app.use(cors());
 app.use(express.json());
 
-// Create necessary directories
+// Create necessary directories if they don't exist
 const dirs = ['uploads', 'data'];
 dirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
@@ -18,44 +18,46 @@ dirs.forEach(dir => {
     }
 });
 
-// Serve static files
-app.use(express.static(path.join(__dirname)));
-app.use('/uploads', express.static('uploads'));
-
-// Serve PDF file
-app.get('/pdf.pdf', (req, res) => {
-    const pdfPath = path.join(__dirname, 'pdf.pdf');
-    console.log('Attempting to serve PDF from:', pdfPath);
-    
-    if (fs.existsSync(pdfPath)) {
-        console.log('PDF file found, sending to client');
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename=registration_form.pdf');
-        res.sendFile(pdfPath, (err) => {
-            if (err) {
-                console.error('Error sending PDF:', err);
-                res.status(500).send('Error sending PDF file');
-            }
-        });
-    } else {
-        console.error('PDF file not found at:', pdfPath);
-        res.status(404).send('PDF file not found');
+// Serve static files with caching headers
+app.use(express.static(path.join(__dirname), {
+    maxAge: '1h',
+    setHeaders: function (res, path) {
+        if (path.endsWith('.pdf')) {
+            res.set('Cache-Control', 'public, max-age=3600');
+        }
     }
-});
+}));
+app.use('/uploads', express.static('uploads', { maxAge: '1h' }));
+app.use('/public', express.static('public', { maxAge: '1h' }));
 
-// Configure multer for file uploads
+// Configure multer for file uploads with file type validation
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads');
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
+        // Add timestamp to filename to prevent conflicts
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ 
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        // Allow only images
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed!'));
+        }
+    },
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+});
 
-// Initialize data storage
+// Initialize data storage with persistence
 let photos = [];
 let events = [];
 let siteContent = {
@@ -80,11 +82,18 @@ try {
     console.error('Error loading data:', error);
 }
 
-// Helper function to save data to files
+// Helper function to save data to files with error handling
 function saveData() {
-    fs.writeFileSync('data/photos.json', JSON.stringify(photos));
-    fs.writeFileSync('data/events.json', JSON.stringify(events));
-    fs.writeFileSync('data/content.json', JSON.stringify(siteContent));
+    try {
+        if (!fs.existsSync('data')) {
+            fs.mkdirSync('data');
+        }
+        fs.writeFileSync('data/photos.json', JSON.stringify(photos, null, 2));
+        fs.writeFileSync('data/events.json', JSON.stringify(events, null, 2));
+        fs.writeFileSync('data/content.json', JSON.stringify(siteContent, null, 2));
+    } catch (error) {
+        console.error('Error saving data:', error);
+    }
 }
 
 // Serve the main HTML file
@@ -100,48 +109,71 @@ app.get('/api/photos', (req, res) => {
 });
 
 app.post('/api/photos', upload.single('image'), (req, res) => {
-    const newPhoto = {
-        id: Date.now().toString(),
-        imageUrl: `/uploads/${req.file.filename}`,
-        caption: req.body.caption
-    };
-    photos.push(newPhoto);
-    saveData();
-    res.json(newPhoto);
-});
-
-app.delete('/api/photos/:id', (req, res) => {
-    const photo = photos.find(p => p.id === req.params.id);
-    if (photo) {
-        const imagePath = path.join(__dirname, photo.imageUrl.substring(1));
-        if (fs.existsSync(imagePath)) {
-            fs.unlinkSync(imagePath);
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No image file uploaded' });
         }
-        photos = photos.filter(p => p.id !== req.params.id);
+
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const newPhoto = {
+            id: Date.now().toString(),
+            imageUrl: `${baseUrl}/uploads/${req.file.filename}`,
+            caption: req.body.caption || '',
+            dateAdded: new Date().toISOString()
+        };
+
+        photos.push(newPhoto);
         saveData();
-        res.json({ message: 'Photo deleted successfully' });
-    } else {
-        res.status(404).json({ error: 'Photo not found' });
+        res.json(newPhoto);
+    } catch (error) {
+        console.error('Error in photo upload:', error);
+        res.status(500).json({ error: 'Failed to upload photo' });
     }
 });
 
-// Events
-app.get('/api/events', (req, res) => {
-    res.json(events);
+app.delete('/api/photos/:id', async (req, res) => {
+    try {
+        const photo = photos.find(p => p.id === req.params.id);
+        if (!photo) {
+            return res.status(404).json({ error: 'Photo not found' });
+        }
+
+        // Delete the file
+        const imagePath = path.join(__dirname, photo.imageUrl.split('/uploads/')[1]);
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+        }
+
+        photos = photos.filter(p => p.id !== req.params.id);
+        saveData();
+        res.json({ message: 'Photo deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting photo:', error);
+        res.status(500).json({ error: 'Failed to delete photo' });
+    }
 });
 
+// Events routes with proper file handling
 app.post('/api/events', upload.single('image'), (req, res) => {
-    const newEvent = {
-        id: Date.now().toString(),
-        title: req.body.title,
-        date: req.body.date,
-        location: req.body.location,
-        description: req.body.description,
-        imageUrl: req.file ? `/uploads/${req.file.filename}` : null
-    };
-    events.push(newEvent);
-    saveData();
-    res.json(newEvent);
+    try {
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const newEvent = {
+            id: Date.now().toString(),
+            title: req.body.title,
+            date: req.body.date,
+            location: req.body.location,
+            description: req.body.description,
+            imageUrl: req.file ? `${baseUrl}/uploads/${req.file.filename}` : null,
+            dateAdded: new Date().toISOString()
+        };
+
+        events.push(newEvent);
+        saveData();
+        res.json(newEvent);
+    } catch (error) {
+        console.error('Error creating event:', error);
+        res.status(500).json({ error: 'Failed to create event' });
+    }
 });
 
 // Content
@@ -158,12 +190,27 @@ app.post('/api/content', express.json(), (req, res) => {
     res.json(siteContent);
 });
 
+// Handle errors globally
+app.use((err, req, res, next) => {
+    console.error('Global error handler:', err);
+    if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ error: 'File is too large. Maximum size is 5MB.' });
+        }
+        return res.status(400).json({ error: err.message });
+    }
+    res.status(500).json({ error: 'Internal server error' });
+});
+
 // Handle 404 errors
 app.use((req, res) => {
     res.status(404).send('Not Found');
 });
 
 // Start the server
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-}); 
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server running locally at http://localhost:${port}`);
+    console.log(`For other devices use: http://<your-ip-address>:${port}`);
+    console.log(`Uploads directory: ${path.join(__dirname, 'uploads')}`);
+    console.log(`Data directory: ${path.join(__dirname, 'data')}`);
+});

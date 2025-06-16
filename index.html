@@ -986,7 +986,12 @@
         </div>
     </div>
 
+    <!-- Config and Scripts -->
+    <script src="/public/config.js"></script>
     <script>
+        // Use the dynamic config
+        const API_URL = window.appConfig.apiUrl;
+
         // Application State
         let currentPage = 'home';
         let isAdminLoggedIn = false;
