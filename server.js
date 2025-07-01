@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises; // Use promises for async file operations
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -9,15 +9,24 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Ensure directories exist
 const dirs = ['uploads', 'data'];
-dirs.forEach(dir => {
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-});
+(async () => {
+    for (const dir of dirs) {
+        try {
+            await fs.mkdir(dir, { recursive: true });
+        } catch (error) {
+            console.error(`Error creating directory ${dir}:`, error);
+        }
+    }
+})();
 
+// Serve static files
 app.use(express.static(path.join(__dirname), { maxAge: '1h' }));
 app.use('/uploads', express.static('uploads', { maxAge: '1h' }));
 app.use('/public', express.static('public', { maxAge: '1h' }));
 
+// Multer configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'uploads'),
     filename: (req, file, cb) => {
@@ -32,29 +41,41 @@ const upload = multer({
         if (file.mimetype.startsWith('image/')) cb(null, true);
         else cb(new Error('Only image files are allowed!'));
     },
-    limits: { fileSize: 5 * 1024 * 1024 }
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
+// Initialize data
 let photos = [];
 let events = [];
 let siteContent = {};
 
-try {
-    if (fs.existsSync('data/photos.json')) photos = JSON.parse(fs.readFileSync('data/photos.json'));
-    if (fs.existsSync('data/events.json')) events = JSON.parse(fs.readFileSync('data/events.json'));
-    if (fs.existsSync('data/content.json')) siteContent = JSON.parse(fs.readFileSync('data/content.json'));
-} catch (error) {
-    console.error('Error loading data:', error);
-}
-
-function saveData() {
+(async () => {
     try {
-        if (!fs.existsSync('data')) fs.mkdirSync('data');
-        fs.writeFileSync('data/photos.json', JSON.stringify(photos, null, 2));
-        fs.writeFileSync('data/events.json', JSON.stringify(events, null, 2));
-        fs.writeFileSync('data/content.json', JSON.stringify(siteContent, null, 2));
+        if (await fs.access('data/photos.json').then(() => true).catch(() => false)) {
+            photos = JSON.parse(await fs.readFile('data/photos.json', 'utf8'));
+        }
+        if (await fs.access('data/events.json').then(() => true).catch(() => false)) {
+            events = JSON.parse(await fs.readFile('data/events.json', 'utf8'));
+        }
+        if (await fs.access('data/content.json').then(() => true).catch(() => false)) {
+            siteContent = JSON.parse(await fs.readFile('data/content.json', 'utf8'));
+        }
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
+})();
+
+async function saveData() {
+    try {
+        await fs.mkdir('data', { recursive: true });
+        await Promise.all([
+            fs.writeFile('data/photos.json', JSON.stringify(photos, null, 2)),
+            fs.writeFile('data/events.json', JSON.stringify(events, null, 2)),
+            fs.writeFile('data/content.json', JSON.stringify(siteContent, null, 2))
+        ]);
     } catch (error) {
         console.error('Error saving data:', error);
+        throw error;
     }
 }
 
@@ -63,7 +84,7 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 // Photos
 app.get('/api/photos', (req, res) => res.json(photos));
 
-app.post('/api/photos', upload.single('image'), (req, res) => {
+app.post('/api/photos', upload.single('image'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'No image file uploaded' });
         const baseUrl = `${req.protocol}://${req.get('host')}`;
@@ -74,7 +95,7 @@ app.post('/api/photos', upload.single('image'), (req, res) => {
             dateAdded: new Date().toISOString()
         };
         photos.push(newPhoto);
-        saveData();
+        await saveData();
         res.json(newPhoto);
     } catch (error) {
         console.error('Error in photo upload:', error);
@@ -82,14 +103,23 @@ app.post('/api/photos', upload.single('image'), (req, res) => {
     }
 });
 
-app.delete('/api/photos/:id', (req, res) => {
+app.delete('/api/photos/:id', async (req, res) => {
     try {
         const photo = photos.find(p => p.id === req.params.id);
         if (!photo) return res.status(404).json({ error: 'Photo not found' });
-        const imagePath = path.join(__dirname, photo.imageUrl.split('/uploads/')[1]);
-        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+
+        // Extract filename from imageUrl
+        const filename = photo.imageUrl.split('/uploads/')[1];
+        const imagePath = path.join(__dirname, 'uploads', filename);
+        try {
+            await fs.access(imagePath);
+            await fs.unlink(imagePath);
+        } catch (error) {
+            console.warn(`Image file not found or could not be deleted: ${imagePath}`);
+        }
+
         photos = photos.filter(p => p.id !== req.params.id);
-        saveData();
+        await saveData();
         res.json({ message: 'Photo deleted successfully' });
     } catch (error) {
         console.error('Error deleting photo:', error);
@@ -100,7 +130,7 @@ app.delete('/api/photos/:id', (req, res) => {
 // Events
 app.get('/api/events', (req, res) => res.json(events));
 
-app.post('/api/events', upload.single('image'), (req, res) => {
+app.post('/api/events', upload.single('image'), async (req, res) => {
     try {
         const baseUrl = `${req.protocol}://${req.get('host')}`;
         const newEvent = {
@@ -113,7 +143,7 @@ app.post('/api/events', upload.single('image'), (req, res) => {
             dateAdded: new Date().toISOString()
         };
         events.push(newEvent);
-        saveData();
+        await saveData();
         res.json(newEvent);
     } catch (error) {
         console.error('Error creating event:', error);
@@ -121,7 +151,7 @@ app.post('/api/events', upload.single('image'), (req, res) => {
     }
 });
 
-app.put('/api/events/:id', upload.single('image'), (req, res) => {
+app.put('/api/events/:id', upload.single('image'), async (req, res) => {
     try {
         const eventIndex = events.findIndex(e => e.id === req.params.id);
         if (eventIndex === -1) return res.status(404).json({ error: 'Event not found' });
@@ -138,14 +168,20 @@ app.put('/api/events/:id', upload.single('image'), (req, res) => {
 
         if (req.file) {
             if (events[eventIndex].imageUrl) {
-                const oldImagePath = path.join(__dirname, events[eventIndex].imageUrl.split('/uploads/')[1]);
-                if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
+                const filename = events[eventIndex].imageUrl.split('/uploads/')[1];
+                const oldImagePath = path.join(__dirname, 'uploads', filename);
+                try {
+                    await fs.access(oldImagePath);
+                    await fs.unlink(oldImagePath);
+                } catch (error) {
+                    console.warn(`Old event image not found or could not be deleted: ${oldImagePath}`);
+                }
             }
             updatedEvent.imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
         }
 
         events[eventIndex] = updatedEvent;
-        saveData();
+        await saveData();
         res.json(updatedEvent);
     } catch (error) {
         console.error('Error updating event:', error);
@@ -153,18 +189,24 @@ app.put('/api/events/:id', upload.single('image'), (req, res) => {
     }
 });
 
-app.delete('/api/events/:id', (req, res) => {
+app.delete('/api/events/:id', async (req, res) => {
     try {
         const eventIndex = events.findIndex(e => e.id === req.params.id);
         if (eventIndex === -1) return res.status(404).json({ error: 'Event not found' });
 
         if (events[eventIndex].imageUrl) {
-            const imagePath = path.join(__dirname, events[eventIndex].imageUrl.split('/uploads/')[1]);
-            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            const filename = events[eventIndex].imageUrl.split('/uploads/')[1];
+            const imagePath = path.join(__dirname, 'uploads', filename);
+            try {
+                await fs.access(imagePath);
+                await fs.unlink(imagePath);
+            } catch (error) {
+                console.warn(`Event image not found or could not be deleted: ${imagePath}`);
+            }
         }
 
         events.splice(eventIndex, 1);
-        saveData();
+        await saveData();
         res.json({ message: 'Event deleted successfully' });
     } catch (error) {
         console.error('Error deleting event:', error);
@@ -175,12 +217,39 @@ app.delete('/api/events/:id', (req, res) => {
 // Content
 app.get('/api/content', (req, res) => res.json(siteContent));
 
-app.post('/api/content', (req, res) => {
-    siteContent = { ...siteContent, ...req.body };
-    saveData();
-    res.json(siteContent);
+app.post('/api/content', async (req, res) => {
+    try {
+        siteContent = { ...siteContent, ...req.body };
+        await saveData();
+        res.json(siteContent);
+    } catch (error) {
+        console.error('Error saving content:', error);
+        res.status(500).json({ error: 'Failed to save content' });
+    }
 });
 
+// Endpoint to list all images in uploads directory
+app.get('/api/all-uploads', async (req, res) => {
+    try {
+        const files = await fs.readdir(path.join(__dirname, 'uploads'));
+        const imageFiles = files.filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file));
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const imageUrls = imageFiles.map(file => {
+            // Find if this image has a caption in the photos collection
+            const photo = photos.find(p => p.imageUrl.includes(file));
+            return {
+                imageUrl: `${baseUrl}/uploads/${file}`,
+                caption: photo?.caption || 'Gallery Image'
+            };
+        });
+        res.json(imageUrls);
+    } catch (error) {
+        console.error('Error reading uploads directory:', error);
+        res.status(500).json({ error: 'Failed to read uploads directory' });
+    }
+});
+
+// Global error handler
 app.use((err, req, res, next) => {
     console.error('Global error handler:', err);
     if (err instanceof multer.MulterError) {
@@ -190,6 +259,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Internal server error' });
 });
 
+// 404 handler
 app.use((req, res) => res.status(404).send('Not Found'));
 
 app.listen(port, '0.0.0.0', () => {

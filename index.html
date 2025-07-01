@@ -81,6 +81,54 @@
             min-height: calc(100vh - 160px);
         }
 
+        /* Gallery Section */
+        .gallery {
+            padding: 4rem 2rem;
+            background-color: #ffffff;
+        }
+
+        .gallery h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #8B0000;
+            font-size: 2.5rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            aspect-ratio: 1;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                padding: 0 1rem;
+            }
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(rgba(139,0,0,0.1), rgba(220,20,60,0.1)), url('images/kk.jpg');
@@ -101,7 +149,7 @@
         }
 
         .hero-content p {
-            font-size: 1.2rem;
+            font-size: 1.2896px;
             max-width: 600px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
@@ -497,77 +545,51 @@
             opacity: 0;
         }
 
-        .event-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-            opacity: 0;
-        }
-
-        .event-card.visible {
-            opacity: 1;
-        }
-
         /* Photo Gallery Styles */
         .photo-gallery {
             padding: 4rem 0;
             background: white;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Add gradient overlays for smooth edges */
-        .photo-gallery::before,
-        .photo-gallery::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100px;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        .photo-gallery::before {
-            left: 0;
-            background: linear-gradient(to right, white, transparent);
-        }
-
-        .photo-gallery::after {
-            right: 0;
-            background: linear-gradient(to left, white, transparent);
         }
 
         .gallery-container {
             position: relative;
             width: 100%;
+            margin: 0 auto;
             overflow: hidden;
-            margin: 0 -1.5rem; /* Compensate for the gap */
+        }
+        
+        /* Add scroll indicators */
+        .gallery-container::before,
+        .gallery-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .gallery-container::before {
+            left: 0;
+            background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0));
+        }
+        
+        .gallery-container::after {
+            right: 0;
+            background: linear-gradient(to left, rgba(255,255,255,0.9), rgba(255,255,255,0));
         }
 
         .gallery-grid {
             display: flex;
+            flex-direction: row;
+            overflow-x: auto;
             gap: 1.5rem;
-            margin-top: 2rem;
-            animation: slideLeft 30s linear infinite;
-            width: max-content;
-            position: relative;
-            padding: 0 1.5rem; /* Add padding to compensate for the negative margin */
-        }
-
-        @keyframes slideLeft {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(calc(-100% - 1.5rem));
-            }
-        }
-
-        .gallery-grid:hover {
-            animation-play-state: paused;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 0;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
         }
 
         .gallery-item {
@@ -578,16 +600,29 @@
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.6s ease-out;
-            flex: 0 0 250px;
+            flex: 0 0 auto;
+            width: 300px;
         }
 
         .gallery-item.visible {
             opacity: 1;
             transform: translateY(0);
+            animation: slideInFromRight 0.6s ease-out forwards;
+        }
+        
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .gallery-item:hover {
-            transform: scale(1.05);
+            transform: translateY(-5px) scale(1.05);
             z-index: 10;
         }
 
@@ -650,11 +685,7 @@
                     <li><a href="#" onclick="showPage('events')">Events</a></li>
                     <li><a href="#" onclick="showPage('registration')">Registration</a></li>
                     <li><a href="#" onclick="showPage('contact')">Contact</a></li>
-                    <li
-
- 
-
-><a href="#" onclick="showPage('admin')">Admin</a></li>
+                    <li><a href="#" onclick="showPage('admin')">Admin</a></li>
                 </ul>
                 <div class="hamburger" onclick="toggleMenu()">
                     <span></span>
@@ -1005,6 +1036,7 @@
         // Initialize data as empty arrays/objects, to be populated from server
         let events = [];
         let photos = [];
+        let uploads = [];
         let siteContent = {};
 
         // Load data from server
@@ -1034,6 +1066,19 @@
             }
         }
 
+        async function loadUploads() {
+            try {
+                const response = await fetch('/api/all-uploads');
+                if (response.ok) {
+                    uploads = await response.json();
+                } else {
+                    console.error('Failed to load uploads');
+                }
+            } catch (error) {
+                console.error('Error loading uploads:', error);
+            }
+        }
+
         async function loadContent() {
             try {
                 const response = await fetch('/api/content');
@@ -1058,6 +1103,12 @@
             pages.forEach(page => page.classList.add('hidden'));
 
             currentPage = pageName;
+            
+            // Clear any existing gallery auto-scroll when changing pages
+            if (window.galleryScrollInterval) {
+                clearInterval(window.galleryScrollInterval);
+                window.galleryScrollInterval = null;
+            }
 
             if (pageName === 'admin') {
                 if (isAdminLoggedIn) {
@@ -1070,6 +1121,7 @@
                 document.getElementById(pageName + 'Page').classList.remove('hidden');
                 if (pageName === 'home') {
                     await loadHomeEvents();
+                    // loadHomePhotos will start the auto-scroll
                 } else if (pageName === 'events') {
                     await loadAllEvents();
                 }
@@ -1081,7 +1133,7 @@
         // Event Management Functions
         async function loadHomeEvents() {
             await loadEvents();
-            await loadPhotos();
+            await loadUploads();
             const container = document.getElementById('homeEventsGrid');
             const upcomingEvents = events.filter(event => new Date(event.date) > new Date()).slice(0, 3);
             container.innerHTML = upcomingEvents.map(event => createEventCard(event)).join('');
@@ -1098,17 +1150,11 @@
 
         function loadHomePhotos() {
             const container = document.getElementById('homePhotoGallery');
-            const recentPhotos = photos.slice(0, 6);
-            const triplicatedPhotos = [...recentPhotos, ...recentPhotos, ...recentPhotos];
-
-            container.innerHTML = triplicatedPhotos.map(photo => `
+            container.innerHTML = uploads.map(photo => `
                 <div class="gallery-item">
-                    ${photo.imageUrl 
-                        ? `<img src="${photo.imageUrl}" alt="${photo.caption}">`
-                        : `<div style="width: 100%; height: 250px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #666;">Photo Placeholder</div>`
-                    }
+                    <img src="${photo.imageUrl}" alt="${photo.caption || 'Gallery Image'}">
                     <div class="gallery-caption">
-                        <p>${photo.caption}</p>
+                        <p>${photo.caption || 'Gallery Image'}</p>
                     </div>
                 </div>
             `).join('');
@@ -1119,11 +1165,77 @@
                     item.classList.add('visible');
                 }, index * 150);
             });
+            
+            // Start auto-scrolling for the gallery
+            startGalleryAutoScroll();
+        }
 
-            container.addEventListener('animationend', () => {
-                container.style.animation = 'none';
-                container.offsetHeight;
-                container.style.animation = 'slideLeft 30s linear infinite';
+        // Auto-scroll functionality for the gallery
+        function startGalleryAutoScroll() {
+            const galleryGrid = document.querySelector('.gallery-grid');
+            if (!galleryGrid) return;
+            
+            let scrollPosition = 0;
+            const scrollAmount = 2; // pixels to scroll per interval
+            const scrollDelay = 30; // milliseconds between each scroll
+            const scrollPauseDelay = 3000; // pause at the end for 3 seconds
+            let isPaused = false;
+            let autoScrollInterval;
+            
+            // Clear any existing interval
+            if (window.galleryScrollInterval) {
+                clearInterval(window.galleryScrollInterval);
+            }
+            
+            autoScrollInterval = setInterval(() => {
+                if (isPaused) return;
+                
+                // If we've reached the end, pause scrolling for a moment
+                if (scrollPosition >= galleryGrid.scrollWidth - galleryGrid.clientWidth) {
+                    isPaused = true;
+                    setTimeout(() => {
+                        // Reset to beginning with smooth animation
+                        galleryGrid.scrollTo({
+                            left: 0,
+                            behavior: 'smooth'
+                        });
+                        scrollPosition = 0;
+                        
+                        // Resume scrolling after a short delay
+                        setTimeout(() => {
+                            isPaused = false;
+                        }, 1000);
+                    }, scrollPauseDelay);
+                    return;
+                }
+                
+                // Increment scroll position
+                scrollPosition += scrollAmount;
+                galleryGrid.scrollLeft = scrollPosition;
+            }, scrollDelay);
+            
+            // Store the interval ID globally so it can be cleared if needed
+            window.galleryScrollInterval = autoScrollInterval;
+            
+            // Pause auto-scrolling when user interacts with the gallery
+            galleryGrid.addEventListener('mouseenter', () => {
+                isPaused = true;
+            });
+            
+            galleryGrid.addEventListener('mouseleave', () => {
+                isPaused = false;
+            });
+            
+            // Pause on touch for mobile devices
+            galleryGrid.addEventListener('touchstart', () => {
+                isPaused = true;
+            });
+            
+            // Resume after touch end with a delay
+            galleryGrid.addEventListener('touchend', () => {
+                setTimeout(() => {
+                    isPaused = false;
+                }, 3000);
             });
         }
 
@@ -1466,6 +1578,7 @@
                     closePhotoModal();
                     await loadPhotos();
                     await loadAdminPhotos();
+                    await loadUploads();
                     if (currentPage === 'home') loadHomePhotos();
                 } else {
                     const error = await response.json();
@@ -1531,12 +1644,17 @@
 
         // Event Listeners
         document.addEventListener('DOMContentLoaded', async function() {
-            await Promise.all([loadEvents(), loadPhotos(), loadContent()]);
+            await Promise.all([loadEvents(), loadPhotos(), loadUploads(), loadContent()]);
             document.getElementById('heroTitle').textContent = siteContent.heroTitle || 'Welcome to Our Drama School';
             document.getElementById('heroText').textContent = siteContent.heroText || 'Discover the art of storytelling through drama, music, and performance at Karnataka\'s premier drama school.';
             document.getElementById('aboutTeaser').textContent = siteContent.aboutTeaser || 'Sri Shivakumara Ranga Prayoga Shaale Sanehalli is dedicated to preserving and promoting the rich traditions of Kannada theatre while nurturing new talent.';
             document.getElementById('footerInfo').innerHTML = siteContent.footerInfo || 'Contact: 9448398144 (Madhu E)<br>© 2025 Sri Shivakumara Ranga Prayoga Shaale Sanehalli. All rights reserved.';
             showPage('home');
+            
+            // Initialize auto-scrolling for gallery if on home page
+            if (currentPage === 'home') {
+                setTimeout(startGalleryAutoScroll, 1000); // Slight delay to ensure gallery is loaded
+            }
 
             document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
                 e.preventDefault();
